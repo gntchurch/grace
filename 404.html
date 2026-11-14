@@ -1,0 +1,1190 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="은혜와진리교회" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./favicon.png?v=21" type="image/png" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png?v=21" />
+    <title>은혜와진리교회</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        overscroll-behavior: none;
+        background-color: #ffffff;
+        color: #1c1917;
+        font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Malgun Gothic", "맑은 고딕", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      #splashScreen {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #ffffff;
+      }
+      .splash-emblem {
+        width: 112px;
+        height: 112px;
+        object-fit: contain;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+      #loginScreen {
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        display: none;
+        margin: 0 auto;
+        min-height: 100dvh;
+        max-width: 32rem;
+        flex-direction: column;
+        background-color: #ffffff;
+        padding: 0 20px;
+        overflow-y: auto;
+        animation: loginFadeIn 0.25s ease-out;
+      }
+      @media (min-width: 640px) {
+        #loginScreen {
+          padding: 0 32px;
+        }
+      }
+      @keyframes loginFadeIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .login-inner {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        justify-content: center;
+        padding: 40px 0;
+      }
+      .login-emblem {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        margin-bottom: 20px;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+      @media (min-width: 640px) {
+        .login-emblem {
+          width: 96px;
+          height: 96px;
+        }
+      }
+      .login-wordmark {
+        height: 32px;
+        width: auto;
+        max-width: 100%;
+        align-self: flex-start;
+        object-fit: contain;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+      @media (min-width: 640px) {
+        .login-wordmark {
+          height: 36px;
+        }
+      }
+      .login-desc {
+        margin-top: 12px;
+        font-size: 15px;
+        line-height: 1.625;
+        color: #57534e;
+      }
+      .login-actions {
+        margin-top: 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .google-btn {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        border-radius: 9999px;
+        border: 1px solid #d6d3d1;
+        background-color: #ffffff;
+        padding: 12px 20px;
+        font-size: 15px;
+        font-weight: 600;
+        color: #292524;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+        cursor: pointer;
+        transition: background-color 0.15s ease, transform 0.1s ease;
+      }
+      .google-btn:hover {
+        background-color: #fafaf9;
+      }
+      .google-btn:active {
+        transform: scale(0.99);
+      }
+      .google-btn:disabled {
+        opacity: 0.6;
+        cursor: default;
+      }
+      .google-icon {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+      }
+      .error-msg {
+        display: none;
+        border-radius: 12px;
+        background-color: #fef2f2;
+        padding: 12px 16px;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #b91c1c;
+      }
+      #appFrame {
+        position: fixed;
+        inset: 0;
+        z-index: 30;
+        display: none;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        background-color: #ffffff;
+      }
+      /* 아이폰(iOS PWA) 및 안드로이드 최상위 알림 권한 허용 모달 */
+      #pushPromptModal {
+        position: fixed;
+        inset: 0;
+        z-index: 90;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 0, 0, 0.55);
+        padding: 20px;
+        backdrop-filter: blur(2px);
+      }
+      .push-card {
+        width: 100%;
+        max-width: 340px;
+        border-radius: 22px;
+        background: #ffffff;
+        padding: 22px 20px;
+        box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.25);
+        text-align: center;
+      }
+      .push-title {
+        font-size: 16px;
+        font-weight: 800;
+        color: #1c1917;
+      }
+      .push-desc {
+        margin-top: 8px;
+        font-size: 13px;
+        line-height: 1.5;
+        color: #57534e;
+      }
+      .push-btn-row {
+        margin-top: 18px;
+        display: flex;
+        gap: 8px;
+      }
+      .push-btn-cancel {
+        flex: 1;
+        height: 42px;
+        border-radius: 12px;
+        border: 1px solid #e7e5e4;
+        background: #f5f5f4;
+        font-size: 14px;
+        font-weight: 700;
+        color: #57534e;
+        cursor: pointer;
+      }
+      .push-btn-allow {
+        flex: 1.4;
+        height: 42px;
+        border-radius: 12px;
+        border: 0;
+        background: #232b5d;
+        font-size: 14px;
+        font-weight: 700;
+        color: #ffffff;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="splashScreen">
+      <img src="./logo-emblem.png?v=21" alt="은혜와진리교회" class="splash-emblem" draggable="false" />
+    </div>
+
+    <main id="loginScreen">
+      <div class="login-inner">
+        <img src="./logo-emblem.png?v=21" alt="은혜와진리교회 엠블럼" class="login-emblem" draggable="false" />
+        <img src="./logo-bottom.png?v=21" alt="은혜와진리교회" class="login-wordmark" draggable="false" />
+        <p class="login-desc">
+          우리 교회 성도들만 들어올 수 있는 공간이에요.<br />
+          가입 후 관리자 승인이 필요합니다.
+        </p>
+
+        <div class="login-actions">
+          <button type="button" id="googleLoginBtn" class="google-btn">
+            <svg class="google-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="#4285F4"
+                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+              />
+              <path
+                fill="#34A853"
+                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+              />
+              <path
+                fill="#EA4335"
+                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              />
+            </svg>
+            <span id="googleBtnText">Google 계정으로 계속하기</span>
+          </button>
+
+          <p id="errorBox" class="error-msg"></p>
+        </div>
+      </div>
+    </main>
+
+    <iframe
+      id="appFrame"
+      title="은혜와진리교회 커뮤니티"
+      allow="camera *; microphone *; fullscreen *; clipboard-read *; clipboard-write *; web-share *; autoplay *"
+    ></iframe>
+
+    <!-- 아이폰·안드로이드 PWA 최상위 알림 권한 허용 모달 -->
+    <div id="pushPromptModal" role="dialog" aria-modal="true">
+      <div class="push-card">
+        <p class="push-title">🔔 교회 메시지 · 말씀 알림 켜기</p>
+        <p class="push-desc">
+          새 메시지와 매일 오전 9시 오늘의 말씀을 받으시려면 아래 <strong>[알림 허용]</strong>을 누른 뒤 <strong>'허용'</strong>을 선택해 주세요.
+        </p>
+        <div class="push-btn-row">
+          <button type="button" id="pushCancelBtn" class="push-btn-cancel">나중에</button>
+          <button type="button" id="pushAllowBtn" class="push-btn-allow">알림 허용</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+      import {
+        getAuth,
+        GoogleAuthProvider,
+        signInWithPopup,
+        onAuthStateChanged,
+        signOut,
+        signInWithRedirect,
+        getRedirectResult,
+        setPersistence,
+        indexedDBLocalPersistence,
+        browserLocalPersistence
+      } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+      // Firebase 웹 설정은 이 저장소에 두지 않고, 실행 시 교회 서버(GET /api/config)에서 받아옵니다.
+      const CACHED_FB_CONFIG_KEY = "cc_cached_fb_config";
+      let auth = null;
+
+      async function loadFirebaseConfig(tunnelBase) {
+        if (tunnelBase) {
+          try {
+            const res = await fetch(tunnelBase + "/api/config?t=" + Date.now(), { cache: "no-store" });
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.firebase && data.firebase.apiKey && data.firebase.projectId) {
+                try { localStorage.setItem(CACHED_FB_CONFIG_KEY, JSON.stringify(data.firebase)); } catch (e) {}
+                return data.firebase;
+              }
+            }
+          } catch (e) {}
+        }
+        try {
+          const cached = JSON.parse(localStorage.getItem(CACHED_FB_CONFIG_KEY) || "null");
+          if (cached && cached.apiKey && cached.projectId) return cached;
+        } catch (e) {}
+        return null;
+      }
+
+      async function ensureAuth(tunnelBase) {
+        if (auth) return auth;
+        const cfg = await loadFirebaseConfig(tunnelBase);
+        if (!cfg) return null;
+        const app = initializeApp(cfg);
+        auth = getAuth(app);
+        auth.languageCode = "ko";
+        await setPersistence(auth, indexedDBLocalPersistence).catch(() => setPersistence(auth, browserLocalPersistence).catch(() => {}));
+        return auth;
+      }
+
+      const GIST_ID = "504fbba58649ceaaefddc468b28ea259";
+      const GIST_API = "https://api.github.com/gists/" + GIST_ID;
+      const GIST_RAW = "https://gist.githubusercontent.com/dailyplantLabs/" + GIST_ID + "/raw/public-url.txt";
+      const LOGGED_OUT_KEY = "cc_gateway_logged_out";
+      const CACHED_TUNNEL_KEY = "cc_cached_tunnel_url";
+      const LAST_PATH_KEY = "cc_gateway_last_path";
+      const SAVED_VAPID_KEY = "cc_gateway_vapid_key_v2";
+      const AUTO_PROMPT_SHOWN_KEY = "cc_gateway_push_auto_prompt_v2";
+
+      const GATEWAY_VERSION = 23;
+      let liveTunnelUrl = "";
+      let frameFallbackTimer = null;
+      let frameInitialized = false;
+      let pendingVapidKey = "";
+      let pendingTriggerTest = false;
+      let explicitRouteRequested = false;
+
+      function urlBase64ToUint8Array(base64String) {
+        const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+        const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+          outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+      }
+
+      function doesSubscriptionMatchVapidKey(sub, vapidKey) {
+        try {
+          if (!sub || !sub.options || !sub.options.applicationServerKey || !vapidKey) return false;
+          const actual = new Uint8Array(sub.options.applicationServerKey);
+          const expected = urlBase64ToUint8Array(vapidKey);
+          if (actual.length !== expected.length) return false;
+          for (let i = 0; i < actual.length; i++) {
+            if (actual[i] !== expected[i]) return false;
+          }
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      async function registerGatewayPushDirectToServer(sub) {
+        if (!sub || !liveTunnelUrl || !auth || !auth.currentUser) return false;
+        try {
+          const idToken = await auth.currentUser.getIdToken();
+          const res = await fetch(liveTunnelUrl.replace(/\/+$/, "") + "/api/push/subscribe-gateway", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              idToken,
+              subscription: sub.toJSON ? sub.toJSON() : sub
+            })
+          });
+          return res.ok;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function isGatewayWindowActivelyVisible() {
+        return document.visibilityState === "visible";
+      }
+
+      function syncSwClientState(customRoute, explicitVisible) {
+        const isVisible = typeof explicitVisible === "boolean" ? explicitVisible : isGatewayWindowActivelyVisible();
+        try {
+          if (typeof appFrameEl !== "undefined" && appFrameEl && appFrameEl.contentWindow) {
+            appFrameEl.contentWindow.postMessage({
+              type: "CC_GATEWAY_VISIBILITY",
+              visible: isVisible,
+              gatewayVersion: GATEWAY_VERSION
+            }, "*");
+          }
+        } catch (e) {}
+        try {
+          if (!("serviceWorker" in navigator) || !navigator.serviceWorker.controller) return;
+          const route = customRoute || sessionStorage.getItem(LAST_PATH_KEY) || localStorage.getItem(LAST_PATH_KEY) || "/";
+          navigator.serviceWorker.controller.postMessage({
+            type: "CC_SW_STATE",
+            route,
+            visible: isVisible
+          });
+        } catch (e) {}
+      }
+
+      async function getGatewaySwRegistration() {
+        if (!("serviceWorker" in navigator)) return null;
+        try {
+          let reg = await navigator.serviceWorker.getRegistration();
+          if (!reg) {
+            reg = await navigator.serviceWorker.register("./sw.js", { scope: "./" });
+          }
+          if (reg && !reg.active) {
+            await Promise.race([
+              navigator.serviceWorker.ready,
+              new Promise((r) => setTimeout(r, 3000))
+            ]);
+            reg = (await navigator.serviceWorker.getRegistration()) || reg;
+          }
+          return reg || null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function stripUrlsFromText(text, fallback) {
+        const raw = String(text || "").trim();
+        if (!raw) return fallback || "";
+        const cleaned = raw
+          .replace(/https?:\/\/[^\s)\]}>"']+/gi, "")
+          .replace(/\bwww\.[^\s)\]}>"']+/gi, "")
+          .replace(/\s+/g, " ")
+          .trim();
+        return cleaned || fallback || "";
+      }
+
+      async function showGatewayNotification(payload) {
+        if (!payload || !("Notification" in window) || Notification.permission !== "granted") return false;
+        try {
+          if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({
+              type: "CC_SHOW_GROUPED_NOTIFICATION",
+              payload
+            });
+            return true;
+          }
+        } catch (e) {}
+        const reg = await getGatewaySwRegistration();
+        if (reg && reg.active) {
+          try {
+            reg.active.postMessage({
+              type: "CC_SHOW_GROUPED_NOTIFICATION",
+              payload
+            });
+            return true;
+          } catch (e) {}
+        }
+        const baseTitle = stripUrlsFromText(payload.title, "은혜와진리교회 알림").replace(/\s*\(\d+개?\)$/, "");
+        const cleanBody = stripUrlsFromText(payload.body, "새 알림이 도착했습니다.");
+        const groupTag = payload.tag || "church-notify";
+
+        let groupCount = 1;
+        let lines = [cleanBody];
+        if (reg && typeof reg.getNotifications === "function") {
+          try {
+            const existing = await reg.getNotifications({ tag: groupTag });
+            if (Array.isArray(existing) && existing.length > 0) {
+              const prev = existing[0];
+              const prevData = prev.data || {};
+              const prevCount = typeof prevData.groupCount === "number" ? prevData.groupCount : 1;
+              groupCount = prevCount + 1;
+              const prevLines =
+                Array.isArray(prevData.lines) && prevData.lines.length > 0
+                  ? prevData.lines
+                  : prev.body
+                    ? String(prev.body).split("\n").filter(Boolean)
+                    : [];
+              lines = [...prevLines, cleanBody].slice(-5);
+            }
+          } catch (e) {}
+        }
+
+        const displayTitle = groupCount > 1 ? `${baseTitle} (${groupCount}개)` : baseTitle;
+        const displayBody = lines.join("\n");
+
+        const fullOpts = {
+          body: displayBody,
+          icon: "./notification-icon.png?v=19",
+          badge: "./notification-badge.png?v=19",
+          tag: groupTag,
+          renotify: true,
+          silent: false,
+          vibrate: Array.isArray(payload.vibrate) ? payload.vibrate : [250, 100, 250, 100, 300],
+          data: { url: payload.url || "/prayers", groupCount, lines }
+        };
+        const safeOpts = {
+          body: displayBody,
+          icon: "./notification-icon.png?v=19",
+          tag: groupTag,
+          data: { url: payload.url || "/prayers", groupCount, lines }
+        };
+        if (reg && "showNotification" in reg) {
+          try {
+            await reg.showNotification(displayTitle, fullOpts);
+            return true;
+          } catch (e) {
+            try {
+              await reg.showNotification(displayTitle, safeOpts);
+              return true;
+            } catch (e2) {}
+          }
+        }
+        try {
+          new Notification(displayTitle, safeOpts);
+          return true;
+        } catch (e) {}
+        return false;
+      }
+
+      async function syncTopLevelPushSubscription(vapidKey, triggerTest) {
+        if (vapidKey) pendingVapidKey = vapidKey;
+        const perm = ("Notification" in window) ? Notification.permission : "unsupported";
+        if (perm !== "granted") {
+          if (appFrameEl.contentWindow) {
+            appFrameEl.contentWindow.postMessage({
+              type: "CC_PUSH_PERMISSION_RESULT",
+              permission: perm,
+              gatewayVersion: GATEWAY_VERSION
+            }, "*");
+          }
+          return null;
+        }
+        try {
+          const reg = await getGatewaySwRegistration();
+          let sub = null;
+          if (reg && "pushManager" in reg && reg.pushManager && pendingVapidKey) {
+            sub = await reg.pushManager.getSubscription();
+            const prevVapid = (() => {
+              try { return localStorage.getItem(SAVED_VAPID_KEY) || ""; } catch (e) { return ""; }
+            })();
+            if (sub && (!doesSubscriptionMatchVapidKey(sub, pendingVapidKey) || (prevVapid && prevVapid !== pendingVapidKey))) {
+              try { await sub.unsubscribe(); } catch (e) {}
+              await new Promise((r) => setTimeout(r, 200));
+              sub = null;
+            }
+            if (!sub) {
+              try {
+                sub = await reg.pushManager.subscribe({
+                  userVisibleOnly: true,
+                  applicationServerKey: urlBase64ToUint8Array(pendingVapidKey)
+                });
+              } catch (subErr) {
+                try {
+                  const oldSub = await reg.pushManager.getSubscription();
+                  if (oldSub) await oldSub.unsubscribe();
+                  await new Promise((r) => setTimeout(r, 200));
+                  sub = await reg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(pendingVapidKey)
+                  });
+                } catch (e2) {}
+              }
+            }
+            if (sub) {
+              try { localStorage.setItem(SAVED_VAPID_KEY, pendingVapidKey); } catch (e) {}
+              registerGatewayPushDirectToServer(sub).catch(() => {});
+            }
+          }
+          if (appFrameEl.contentWindow) {
+            appFrameEl.contentWindow.postMessage({
+              type: "CC_PUSH_SUBSCRIPTION",
+              subscription: sub ? sub.toJSON() : null,
+              permission: "granted",
+              triggerTest: Boolean(triggerTest),
+              gatewayVersion: GATEWAY_VERSION
+            }, "*");
+          }
+          if (triggerTest) {
+            await showGatewayNotification({
+              title: "🔔 은혜와진리교회 알림 설정 완료",
+              body: "새 메시지와 공지사항, 오늘의 말씀 알림이 정상 작동합니다.",
+              tag: "push-test-" + Date.now(),
+              url: "/prayers"
+            });
+          }
+          return sub;
+        } catch (e) {
+          if (appFrameEl.contentWindow) {
+            appFrameEl.contentWindow.postMessage({
+              type: "CC_PUSH_PERMISSION_RESULT",
+              permission: perm,
+              gatewayVersion: GATEWAY_VERSION
+            }, "*");
+          }
+          return null;
+        }
+      }
+
+      async function probeTunnelUrl(candidateUrl, timeoutMs = 3200) {
+        if (!candidateUrl || !candidateUrl.startsWith("https://")) return false;
+        const clean = candidateUrl.replace(/\/+$/, "");
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+          const res = await fetch(clean + "/api/config?t=" + Date.now(), {
+            cache: "no-store",
+            signal: ctrl.signal
+          });
+          clearTimeout(timer);
+          if (res.ok) {
+            const data = await res.json().catch(() => null);
+            if (data && data.firebase && data.firebase.apiKey && data.firebase.projectId) {
+              try { localStorage.setItem(CACHED_FB_CONFIG_KEY, JSON.stringify(data.firebase)); } catch (e) {}
+            }
+            if (data && typeof data.vapidPublicKey === "string" && data.vapidPublicKey) {
+              pendingVapidKey = data.vapidPublicKey;
+            }
+            try { localStorage.setItem(CACHED_TUNNEL_KEY, clean); } catch (e) {}
+            return true;
+          }
+        } catch (e) {}
+        try {
+          if (localStorage.getItem(CACHED_TUNNEL_KEY) === clean) {
+            localStorage.removeItem(CACHED_TUNNEL_KEY);
+          }
+        } catch (e) {}
+        return false;
+      }
+
+      async function collectCandidateUrls() {
+        const candidates = [];
+        const addCandidate = (u) => {
+          if (!u || typeof u !== "string") return;
+          const clean = u.trim().replace(/\/+$/, "");
+          if (clean.startsWith("https://") && !candidates.includes(clean)) {
+            candidates.push(clean);
+          }
+        };
+
+        const tasks = [
+          fetch(GIST_API + "?t=" + Date.now(), { cache: "no-store" })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => d && d.files && d.files["public-url.txt"] && d.files["public-url.txt"].content)
+            .catch(() => null),
+          fetch("./public-url.txt?t=" + Date.now(), { cache: "no-store" })
+            .then((r) => (r.ok ? r.text() : null))
+            .catch(() => null),
+          fetch("https://raw.githubusercontent.com/gntchurch/grace/main/public-url.txt?t=" + Date.now(), { cache: "no-store" })
+            .then((r) => (r.ok ? r.text() : null))
+            .catch(() => null),
+          fetch(GIST_RAW + "?t=" + Date.now(), { cache: "no-store" })
+            .then((r) => (r.ok ? r.text() : null))
+            .catch(() => null)
+        ];
+
+        const results = await Promise.all(tasks);
+        for (const r of results) {
+          if (r) addCandidate(r);
+        }
+
+        try {
+          const cached = localStorage.getItem(CACHED_TUNNEL_KEY);
+          if (cached) addCandidate(cached);
+        } catch (e) {}
+
+        return candidates;
+      }
+
+      async function fetchLatestUrl(maxRetries = 6) {
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+          const candidates = await collectCandidateUrls();
+          for (const candidate of candidates) {
+            const alive = await probeTunnelUrl(candidate, 3200);
+            if (alive) {
+              return candidate;
+            }
+          }
+          if (attempt < maxRetries) {
+            await new Promise((r) => setTimeout(r, 1500));
+          }
+        }
+        return "";
+      }
+
+      function waitForInitialAuthUser() {
+        if (!auth) return Promise.resolve(null);
+        return new Promise((resolve) => {
+          const unsub = onAuthStateChanged(
+            auth,
+            (user) => {
+              unsub();
+              resolve(user);
+            },
+            () => {
+              unsub();
+              resolve(null);
+            }
+          );
+        });
+      }
+
+      const splashEl = document.getElementById("splashScreen");
+      const loginEl = document.getElementById("loginScreen");
+      const appFrameEl = document.getElementById("appFrame");
+      const btnEl = document.getElementById("googleLoginBtn");
+      const btnTextEl = document.getElementById("googleBtnText");
+      const errorEl = document.getElementById("errorBox");
+      const pushModalEl = document.getElementById("pushPromptModal");
+      const pushAllowBtnEl = document.getElementById("pushAllowBtn");
+      const pushCancelBtnEl = document.getElementById("pushCancelBtn");
+
+      pushCancelBtnEl.addEventListener("click", () => {
+        pushModalEl.style.display = "none";
+        if (appFrameEl.contentWindow) {
+          const p = ("Notification" in window) ? Notification.permission : "default";
+          appFrameEl.contentWindow.postMessage({ type: "CC_PUSH_PERMISSION_RESULT", permission: p }, "*");
+        }
+      });
+
+      // 아이폰(iOS 16.4+ PWA) 및 안드로이드 최상위 사용자 터치 이벤트에서 직접 권한 요청
+      pushAllowBtnEl.addEventListener("click", async () => {
+        pushModalEl.style.display = "none";
+        try {
+          if (!("Notification" in window) || typeof Notification.requestPermission !== "function") {
+            if (appFrameEl.contentWindow) {
+              appFrameEl.contentWindow.postMessage({ type: "CC_PUSH_PERMISSION_RESULT", permission: "unsupported" }, "*");
+            }
+            return;
+          }
+          const perm = await Notification.requestPermission();
+          if (perm === "granted") {
+            await syncTopLevelPushSubscription(pendingVapidKey, pendingTriggerTest);
+          } else if (appFrameEl.contentWindow) {
+            appFrameEl.contentWindow.postMessage({ type: "CC_PUSH_PERMISSION_RESULT", permission: perm }, "*");
+          }
+        } catch (e) {
+          if (appFrameEl.contentWindow) {
+            appFrameEl.contentWindow.postMessage({ type: "CC_PUSH_PERMISSION_RESULT", permission: "default" }, "*");
+          }
+        }
+      });
+
+      let isRecoveringTunnel = false;
+
+      async function ensureActiveTunnelAndNavigate(targetRoute, forceReload = false) {
+        if (targetRoute && typeof targetRoute === "string" && targetRoute.startsWith("/")) {
+          try { sessionStorage.setItem(LAST_PATH_KEY, targetRoute); } catch (e) {}
+          try { localStorage.setItem(LAST_PATH_KEY, targetRoute); } catch (e) {}
+        }
+        if (isRecoveringTunnel) return;
+
+        const currentFrameAlive =
+          !forceReload &&
+          frameInitialized &&
+          liveTunnelUrl &&
+          appFrameEl.src &&
+          appFrameEl.src.startsWith(liveTunnelUrl) &&
+          (await probeTunnelUrl(liveTunnelUrl, 2500));
+
+        if (currentFrameAlive) {
+          if (targetRoute && appFrameEl.contentWindow) {
+            revealAppFrame();
+            appFrameEl.contentWindow.postMessage({ type: "CC_NAVIGATE", url: targetRoute }, "*");
+            setTimeout(() => {
+              if (appFrameEl.contentWindow) {
+                appFrameEl.contentWindow.postMessage({ type: "CC_NAVIGATE", url: targetRoute }, "*");
+              }
+            }, 450);
+          }
+          return;
+        }
+
+        // 이전 터널이 종료되고 새 터널 주소가 발급된 경우: 오류 화면 대신 로딩 화면을 띄우고 새 터널로 즉시 자동 전환
+        isRecoveringTunnel = true;
+        try {
+          if (frameInitialized) {
+            appFrameEl.style.display = "none";
+            splashEl.style.display = "flex";
+          }
+          const freshUrl = await fetchLatestUrl(8);
+          if (!freshUrl) return;
+          liveTunnelUrl = freshUrl;
+          await ensureAuth(freshUrl);
+          if (auth && auth.currentUser) {
+            const idToken = await auth.currentUser.getIdToken();
+            frameInitialized = false;
+            openCommunityWithToken(freshUrl, idToken);
+          }
+        } catch (e) {
+        } finally {
+          isRecoveringTunnel = false;
+        }
+      }
+
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.addEventListener("message", (event) => {
+          if (event.data && event.data.type === "CC_PUSH_CLICK_NAVIGATE" && typeof event.data.url === "string" && event.data.url.startsWith("/")) {
+            explicitRouteRequested = true;
+            ensureActiveTunnelAndNavigate(event.data.url, false);
+          } else if (event.data && event.data.type === "CC_APPLY_WINDOW_BADGE") {
+            const c = typeof event.data.count === "number" ? Math.max(0, Math.floor(event.data.count)) : 0;
+            try {
+              if (c > 0 && typeof navigator.setAppBadge === "function") {
+                navigator.setAppBadge(c).catch(() => {});
+              } else if (c <= 0 && typeof navigator.clearAppBadge === "function") {
+                navigator.clearAppBadge().catch(() => {});
+              }
+            } catch (e) {}
+          }
+        });
+      }
+
+      document.addEventListener("visibilitychange", () => {
+        syncSwClientState();
+        if (document.visibilityState === "visible" && frameInitialized) {
+          ensureActiveTunnelAndNavigate(null, false);
+          if ("Notification" in window && Notification.permission === "granted" && pendingVapidKey) {
+            syncTopLevelPushSubscription(pendingVapidKey, false).catch(() => {});
+          }
+        }
+      });
+      window.addEventListener("online", () => {
+        if (frameInitialized && document.visibilityState === "visible") {
+          ensureActiveTunnelAndNavigate(null, false);
+        }
+      });
+      window.addEventListener("focus", () => {
+        syncSwClientState();
+        if (frameInitialized && document.visibilityState === "visible") {
+          ensureActiveTunnelAndNavigate(null, false);
+        }
+      });
+      window.addEventListener("pageshow", () => {
+        syncSwClientState();
+      });
+      window.addEventListener("pagehide", () => {
+        syncSwClientState(null, false);
+      });
+      setInterval(() => {
+        if (frameInitialized && document.visibilityState === "visible") {
+          ensureActiveTunnelAndNavigate(null, false);
+        }
+      }, 12000);
+
+      function showError(msg) {
+        errorEl.textContent = msg;
+        errorEl.style.display = "block";
+      }
+
+      function showLoginScreen() {
+        if (frameFallbackTimer) {
+          clearTimeout(frameFallbackTimer);
+          frameFallbackTimer = null;
+        }
+        appFrameEl.style.display = "none";
+        splashEl.style.display = "none";
+        loginEl.style.display = "flex";
+        btnEl.disabled = false;
+        btnTextEl.textContent = "Google 계정으로 계속하기";
+      }
+
+      function revealAppFrame() {
+        if (frameFallbackTimer) {
+          clearTimeout(frameFallbackTimer);
+          frameFallbackTimer = null;
+        }
+        loginEl.style.display = "none";
+        appFrameEl.style.display = "block";
+        splashEl.style.display = "none";
+      }
+
+      function openCommunityWithToken(targetBase, idToken) {
+        if (frameInitialized && appFrameEl.src && appFrameEl.src !== "about:blank") {
+          revealAppFrame();
+          return;
+        }
+        frameInitialized = true;
+        let savedPath = "/";
+        try {
+          const p = sessionStorage.getItem(LAST_PATH_KEY) || localStorage.getItem(LAST_PATH_KEY);
+          if (p && p.startsWith("/")) savedPath = p;
+        } catch (e) {}
+        // 푸시 알림을 직접 눌러 진입한 경우가 아니라면 특정 대화방(/messages/:id)으로 바로 열려 자동 읽음 처리되는 것을 방지
+        if (!explicitRouteRequested && /^\/messages\/[^/]+$/.test(savedPath) && savedPath !== "/messages/new") {
+          savedPath = "/messages";
+        }
+        explicitRouteRequested = false;
+        loginEl.style.display = "none";
+        splashEl.style.display = "flex";
+        appFrameEl.style.display = "block";
+        appFrameEl.src = targetBase + savedPath + "#firebase_token=" + encodeURIComponent(idToken);
+
+        if (frameFallbackTimer) clearTimeout(frameFallbackTimer);
+        frameFallbackTimer = setTimeout(() => {
+          revealAppFrame();
+        }, 2200);
+
+        if ("Notification" in window && Notification.permission === "granted" && pendingVapidKey) {
+          syncTopLevelPushSubscription(pendingVapidKey, false).catch(() => {});
+        }
+      }
+
+      appFrameEl.addEventListener("load", () => {
+        setTimeout(() => {
+          if (appFrameEl.src && appFrameEl.src !== "about:blank") {
+            revealAppFrame();
+            if (appFrameEl.contentWindow) {
+              const p = ("Notification" in window) ? Notification.permission : "unsupported";
+              appFrameEl.contentWindow.postMessage({
+                type: "CC_GATEWAY_PONG",
+                gatewayVersion: GATEWAY_VERSION,
+                permission: p,
+                visible: isGatewayWindowActivelyVisible()
+              }, "*");
+            }
+          }
+        }, 350);
+      });
+
+      window.addEventListener("message", async (event) => {
+        const data = event.data;
+        if (!data || typeof data.type !== "string") return;
+
+        if (data.type === "CC_APP_READY") {
+          revealAppFrame();
+          if (appFrameEl.contentWindow) {
+            const p = ("Notification" in window) ? Notification.permission : "unsupported";
+            appFrameEl.contentWindow.postMessage({
+              type: "CC_GATEWAY_PONG",
+              gatewayVersion: GATEWAY_VERSION,
+              permission: p,
+              visible: isGatewayWindowActivelyVisible()
+            }, "*");
+          }
+        } else if (data.type === "CC_TUNNEL_DEAD") {
+          const p = typeof data.path === "string" && data.path.startsWith("/") ? data.path : null;
+          ensureActiveTunnelAndNavigate(p, true);
+        } else if (data.type === "CC_ROUTE_CHANGE" && typeof data.path === "string") {
+          try { sessionStorage.setItem(LAST_PATH_KEY, data.path); } catch (e) {}
+          try { localStorage.setItem(LAST_PATH_KEY, data.path); } catch (e) {}
+          syncSwClientState(data.path);
+        } else if (data.type === "CC_VIBRATE") {
+          try {
+            if (navigator.vibrate) navigator.vibrate(data.pattern || [200, 100, 200]);
+          } catch (e) {}
+        } else if (data.type === "CC_CLIPBOARD_WRITE" && typeof data.text === "string" && data.text) {
+          try {
+            if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+              await navigator.clipboard.writeText(data.text);
+            }
+          } catch (e) {}
+        } else if (data.type === "CC_CLIPBOARD_READ") {
+          let readText = "";
+          try {
+            if (navigator.clipboard && typeof navigator.clipboard.readText === "function") {
+              readText = await navigator.clipboard.readText();
+            }
+          } catch (e) {}
+          try {
+            if (appFrameEl && appFrameEl.contentWindow) {
+              appFrameEl.contentWindow.postMessage({
+                type: "CC_CLIPBOARD_READ_RESULT",
+                reqId: data.reqId,
+                text: readText || ""
+              }, "*");
+            }
+          } catch (e) {}
+        } else if (data.type === "CC_SHOW_NOTIFICATION" && data.payload) {
+          await showGatewayNotification(data.payload);
+        } else if (data.type === "CC_SET_APP_BADGE") {
+          const count = typeof data.count === "number" ? Math.max(0, Math.floor(data.count)) : 0;
+          try {
+            if (count > 0 && typeof navigator.setAppBadge === "function") {
+              navigator.setAppBadge(count).catch(() => {});
+            }
+          } catch (e) {}
+          try {
+            if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+              navigator.serviceWorker.controller.postMessage({ type: "CC_SET_APP_BADGE", count });
+            } else if (count <= 0 && typeof navigator.clearAppBadge === "function") {
+              navigator.clearAppBadge().catch(() => {});
+            }
+          } catch (e) {}
+        } else if (data.type === "CC_CLEAR_ROOM_NOTIFICATIONS" && typeof data.conversationId === "string") {
+          try {
+            if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+              navigator.serviceWorker.controller.postMessage({
+                type: "CC_CLEAR_ROOM_NOTIFICATIONS",
+                conversationId: data.conversationId
+              });
+            }
+          } catch (e) {}
+        } else if (data.type === "CC_SYNC_PUSH") {
+          if (data.vapidPublicKey) pendingVapidKey = data.vapidPublicKey;
+          if ("Notification" in window && Notification.permission === "granted") {
+            await syncTopLevelPushSubscription(pendingVapidKey, false);
+          } else {
+            if ("Notification" in window && Notification.permission === "default") {
+              const alreadyShown = (() => {
+                try { return sessionStorage.getItem(AUTO_PROMPT_SHOWN_KEY) === "1"; } catch (e) { return false; }
+              })();
+              if (!alreadyShown) {
+                try { sessionStorage.setItem(AUTO_PROMPT_SHOWN_KEY, "1"); } catch (e) {}
+                pendingTriggerTest = false;
+                pushModalEl.style.display = "flex";
+              }
+            }
+            if (appFrameEl.contentWindow) {
+              const p = ("Notification" in window) ? Notification.permission : "unsupported";
+              appFrameEl.contentWindow.postMessage({
+                type: "CC_PUSH_PERMISSION_RESULT",
+                permission: p,
+                gatewayVersion: GATEWAY_VERSION
+              }, "*");
+            }
+          }
+        } else if (data.type === "CC_REQUEST_PUSH_PERMISSION") {
+          if (data.vapidPublicKey) pendingVapidKey = data.vapidPublicKey;
+          pendingTriggerTest = Boolean(data.triggerTest);
+          if (!("Notification" in window) || typeof Notification.requestPermission !== "function") {
+            if (appFrameEl.contentWindow) {
+              appFrameEl.contentWindow.postMessage({
+                type: "CC_PUSH_PERMISSION_RESULT",
+                permission: "unsupported",
+                gatewayVersion: GATEWAY_VERSION
+              }, "*");
+            }
+            return;
+          }
+          if (Notification.permission === "granted") {
+            await syncTopLevelPushSubscription(pendingVapidKey, pendingTriggerTest);
+            return;
+          }
+          if (Notification.permission === "denied") {
+            if (appFrameEl.contentWindow) {
+              appFrameEl.contentWindow.postMessage({
+                type: "CC_PUSH_PERMISSION_RESULT",
+                permission: "denied",
+                gatewayVersion: GATEWAY_VERSION
+              }, "*");
+            }
+            return;
+          }
+          // 아이폰·안드로이드 PWA 최상위 프레임에서 사용자 직접 터치를 받아 OS 권한 창을 띄움
+          pushModalEl.style.display = "flex";
+        } else if (data.type === "CC_LOGOUT") {
+          frameInitialized = false;
+          try { sessionStorage.removeItem(LAST_PATH_KEY); } catch (e) {}
+          try { localStorage.removeItem(LAST_PATH_KEY); } catch (e) {}
+          try { localStorage.setItem(LOGGED_OUT_KEY, "1"); } catch (e) {}
+          try { if (auth) await signOut(auth); } catch (e) {}
+          appFrameEl.src = "about:blank";
+          showLoginScreen();
+        } else if (data.type === "CC_NEED_LOGIN") {
+          const explicitlyLoggedOut = (() => {
+            try { return localStorage.getItem(LOGGED_OUT_KEY) === "1"; } catch (e) { return false; }
+          })();
+          if (!data.forcePrompt && !explicitlyLoggedOut && auth && auth.currentUser) {
+            try {
+              const freshToken = await auth.currentUser.getIdToken(true);
+              if (appFrameEl.contentWindow) {
+                appFrameEl.contentWindow.postMessage({ type: "CC_FIREBASE_TOKEN", idToken: freshToken }, "*");
+                return;
+              }
+            } catch (e) {}
+          }
+          showLoginScreen();
+        }
+      });
+
+      async function initFlow() {
+        const params = new URLSearchParams(window.location.search);
+        const requestedRoute = params.get("route");
+        if (requestedRoute && requestedRoute.startsWith("/")) {
+          explicitRouteRequested = true;
+          try { sessionStorage.setItem(LAST_PATH_KEY, requestedRoute); } catch (e) {}
+          try { localStorage.setItem(LAST_PATH_KEY, requestedRoute); } catch (e) {}
+        }
+        const forceLogin = params.get("login") === "1";
+        if (forceLogin || requestedRoute) {
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+
+        const minSplash = new Promise((r) => setTimeout(r, 550));
+        const url = await fetchLatestUrl();
+        liveTunnelUrl = url;
+        await ensureAuth(url);
+        if (auth) await getRedirectResult(auth).catch(() => null);
+        const [existingUser] = await Promise.all([
+          waitForInitialAuthUser(),
+          minSplash
+        ]);
+
+        const explicitlyLoggedOut = (() => {
+          try { return localStorage.getItem(LOGGED_OUT_KEY) === "1"; } catch (e) { return false; }
+        })();
+
+        if (existingUser && !forceLogin && !explicitlyLoggedOut && liveTunnelUrl) {
+          try {
+            const idToken = await existingUser.getIdToken();
+            openCommunityWithToken(liveTunnelUrl, idToken);
+            return;
+          } catch (e) {}
+        }
+
+        showLoginScreen();
+      }
+
+      btnEl.addEventListener("click", async () => {
+        btnEl.disabled = true;
+        btnTextEl.textContent = "구글 로그인 연결 중...";
+        errorEl.style.display = "none";
+
+        try {
+          if (!auth) await ensureAuth(liveTunnelUrl || (await fetchLatestUrl()));
+          if (!auth) {
+            throw new Error("현재 교회 서버가 켜져 있지 않아 로그인 설정을 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.");
+          }
+          const provider = new GoogleAuthProvider();
+          provider.setCustomParameters({ prompt: "select_account" });
+
+          const isIosStandalone = /iPad|iPhone|iPod/i.test(navigator.userAgent || "") && ((window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true);
+          let result;
+          try {
+            result = await signInWithPopup(auth, provider);
+          } catch (popErr) {
+            const pCode = popErr && popErr.code ? popErr.code : "";
+            if (isIosStandalone || pCode === "auth/popup-blocked" || pCode === "auth/operation-not-supported-in-this-environment") {
+              await signInWithRedirect(auth, provider);
+              return;
+            }
+            throw popErr;
+          }
+          const idToken = await result.user.getIdToken();
+          try { localStorage.removeItem(LOGGED_OUT_KEY); } catch (e) {}
+
+          const targetBase = (await fetchLatestUrl()) || liveTunnelUrl;
+          if (!targetBase) {
+            throw new Error("현재 교회 서버가 켜져 있지 않거나 연결 주소를 찾을 수 없습니다.");
+          }
+          liveTunnelUrl = targetBase;
+
+          openCommunityWithToken(targetBase, idToken);
+        } catch (err) {
+          const code = err && err.code ? err.code : "";
+          if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") {
+            showError("구글 로그인 창이 닫혔습니다. 다시 시도해 주세요.");
+          } else if (code === "auth/popup-blocked") {
+            showError("브라우저에서 팝업이 차단되었습니다. 팝업 차단을 해제한 뒤 다시 시도해 주세요.");
+          } else if (code === "auth/unauthorized-domain") {
+            showError("Firebase 콘솔 → Authentication → 설정 → 승인된 도메인에 " + window.location.hostname + " 를 추가해 주세요.");
+          } else {
+            showError((err && err.message) || "구글 로그인 중 오류가 발생했습니다.");
+          }
+          btnEl.disabled = false;
+          btnTextEl.textContent = "Google 계정으로 계속하기";
+        }
+      });
+
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(() => {});
+        });
+      }
+
+      initFlow();
+    </script>
+  </body>
+</html>
